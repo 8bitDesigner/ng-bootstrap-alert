@@ -1,132 +1,82 @@
 (function() {
-  angular.module("ng-form-group", []);
-
-}).call(this);
-
-(function() {
-  var FormGroupController,
+  var AlertProvider, Alerts,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  FormGroupController = (function() {
-    function FormGroupController($scope) {
-      var unref;
-      this.$scope = $scope;
-      this.update = __bind(this.update, this);
-      this.status = null;
-      this.disabled = false;
-      this.inputs = [];
-      unref = this.$scope.$watch(this.update);
-      this.$scope.$on("$destroy", unref);
+  AlertProvider = (function() {
+    function AlertProvider() {
+      this.$get = __bind(this.$get, this);
+      this.pending = [];
     }
 
-    FormGroupController.prototype.update = function() {
-      this.status = null;
-      if (!this.inputs.every(function(i) {
-        return i.$dirty;
-      })) {
-        return;
-      }
-      this.status = this.inputs.every(function(i) {
-        return i.$valid;
-      }) ? "success" : "error";
-      if (!this.$scope.$$phase) {
-        return this.$scope.$digest();
-      }
+    AlertProvider.prototype.flashTypeMap = {
+      alert: 'warning',
+      notice: 'info'
     };
 
-    FormGroupController.prototype.addInput = function(ctrl) {
-      return this.inputs.push(ctrl);
+    AlertProvider.prototype.queue = function(msg, type, opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      if (this.flashTypeMap[type]) {
+        type = this.flashTypeMap[type];
+      } else {
+        type;
+      }
+      return this.pending.push([
+        msg, angular.extend({
+          type: type
+        }, opts)
+      ]);
     };
 
-    return FormGroupController;
+    AlertProvider.prototype.$get = function() {
+      return new Alerts(this.pending);
+    };
+
+    return AlertProvider;
 
   })();
 
-  angular.module("ng-form-group").controller('FormGroupController', ['$scope', FormGroupController]).directive("formGroup", function() {
-    return {
-      restrict: "C",
-      require: "formGroup",
-      controller: 'FormGroupController',
-      link: function(scope, el, attrs, ctrl) {
-        var dereg;
-        if (el.hasClass('form-group-without-feedback')) {
-          ctrl.disabled = true;
-          return;
-        }
-        dereg = scope.$watch((function() {
-          return ctrl.status;
-        }), function(status) {
-          el.removeClass("has-error has-success");
-          if (status) {
-            return el.addClass("has-" + status);
-          }
-        });
-        return scope.$on('$destroy', dereg);
+  Alerts = (function() {
+    function Alerts(pendingAlerts) {
+      if (pendingAlerts == null) {
+        pendingAlerts = [];
       }
-    };
-  }).directive("formControl", function() {
-    return {
-      restrict: "C",
-      require: ["?ngModel", "?^formGroup"],
-      link: function(scope, input, attrs, ctrls) {
-        var formGroupCtrl, ngModelCtrl;
-        ngModelCtrl = ctrls[0], formGroupCtrl = ctrls[1];
-        if (formGroupCtrl.disabled) {
-          return;
-        }
-        if (ngModelCtrl && formGroupCtrl) {
-          return formGroupCtrl.addInput(ngModelCtrl);
-        }
-      }
-    };
-  });
-
-}).call(this);
-
-(function() {
-  var toArray;
-
-  toArray = function(arrayish) {
-    return Array.prototype.slice.call(arrayish);
-  };
-
-  angular.module("ng-form-group").directive("hasFeedback", function() {
-    return {
-      restrict: "C",
-      compile: function(el, attrs) {
-        return toArray(el[0].querySelectorAll(".form-control")).forEach(function(input) {
-          return input.setAttribute("has-feedback-watcher", "");
-        });
-      }
-    };
-  }).directive("hasFeedbackWatcher", function() {
-    return {
-      require: "ngModel",
-      link: function(scope, input, attrs, ctrl) {
-        var feedbackIcon, unref;
-        feedbackIcon = function(isGood) {
-          var icon;
-          if (isGood == null) {
-            isGood = false;
-          }
-          icon = isGood ? "glyphicon-ok" : "glyphicon-remove";
-          return "<span class=\"glyphicon " + icon + " form-control-feedback\"></span>";
+      this.queue = [];
+      pendingAlerts.forEach((function(_this) {
+        return function(input) {
+          return _this.create.apply(_this, input);
         };
-        unref = scope.$watch(function() {
-          if (!ctrl.$dirty) {
-            return;
-          }
-          toArray(input[0].parentElement.querySelectorAll(".form-control-feedback")).forEach(function(span) {
-            return span.parentElement.removeChild(span);
-          });
-          if (ctrl.$valid) {
-            return input.after(feedbackIcon(true));
-          } else if (ctrl.$invalid) {
-            return input.after(feedbackIcon(false));
-          }
-        });
-        return scope.$on("$destroy", unref);
+      })(this));
+    }
+
+    Alerts.prototype.dismiss = function(alert) {
+      return this.queue.splice(this.queue.indexOf(alert), 1);
+    };
+
+    Alerts.prototype.create = function(msg, opts) {
+      var alert;
+      if (opts == null) {
+        opts = {};
       }
+      alert = angular.extend({
+        msg: msg
+      }, opts);
+      alert.type = alert.type || 'info';
+      return this.queue.push(alert);
+    };
+
+    return Alerts;
+
+  })();
+
+  angular.module("ng-bootstrap-alerts", []).provider('alerts', AlertProvider).directive('alertList', function(alerts) {
+    return {
+      link: function(scope) {
+        return scope.alerts = alerts;
+      },
+      restrict: 'E',
+      template: "<alert\n  ng-repeat=\"alert in alerts.queue\"\n  type=\"{{alert.type}}\"\n  close=\"alerts.dismiss(alert)\"\n>{{alert.msg}}</alert>"
     };
   });
 

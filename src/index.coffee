@@ -7,7 +7,7 @@ class AlertProvider
     notice: 'info'
 
   queue: (msg, type, opts = {}) ->
-    if @flashTypeMap[type] then 
+    if @flashTypeMap[type]
       type = @flashTypeMap[type]
     else
       type
