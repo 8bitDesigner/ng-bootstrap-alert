@@ -1,6 +1,6 @@
 {
   "name": "ng-bootstrap-alerts",
-  "main": "src/index.coffee",
+  "main": "dist/index.min.js",
   "version": "1.0.0",
   "authors": [
     "Paul Sweeney <paul@fullscreen.net>"
@@ -15,7 +15,6 @@
     "bower_components",
     "bin",
     "src",
-    "test",
     "tests",
     "gulpfile.js",
     "karma.conf.js",

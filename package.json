@@ -4,6 +4,7 @@
     "release:minor": "node ./bin/release.js minor",
     "release:patch": "node ./bin/release.js patch",
     "build": "gulp",
+    "build:watch": "gulp watch",
     "test": "./node_modules/karma/bin/karma start karma.conf.js",
     "watch": "./node_modules/karma/bin/karma start karma.watch.js"
   },

@@ -26,3 +26,6 @@ gulp.task('minified', function() {
 
 gulp.task('default', ['build', 'minified'])
 
+gulp.task('watch', ['default'], function() {
+  gulp.watch(files, ['default'])
+})

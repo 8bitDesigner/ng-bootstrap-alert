@@ -4,11 +4,12 @@ module.exports = function(config) {
     files: [
       "bower_components/angular/angular.js",
       "bower_components/angular-mocks/angular-mocks.js",
-      "src/index.coffee"
+      "src/index.coffee",
+      "tests/index.coffee"
     ],
     preprocessors: {
-      "src/*.coffee": "coffee",
-      "tests/*.coffee": "coffee"
+      "src/index.coffee": "coffee",
+      "tests/index.coffee": "coffee"
     },
     port: 8080,
     logLevel: config.LOG_INFO,
