@@ -4,6 +4,8 @@ module.exports = function(config) {
     files: [
       "bower_components/angular/angular.js",
       "bower_components/angular-mocks/angular-mocks.js",
+      "bower_components/angular-bootstrap/ui-bootstrap.min.js",
+      "bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
       "src/index.coffee",
       "tests/index.coffee"
     ],

@@ -72,7 +72,7 @@
 
   })();
 
-  angular.module("ng-bootstrap-alerts", []).provider('alerts', AlertProvider).directive('alertList', function(alerts, $sce) {
+  angular.module("ng-bootstrap-alerts", ['ui.bootstrap.alert', 'template/alert/alert.html']).provider('alerts', AlertProvider).directive('alertList', function(alerts, $sce) {
     return {
       link: function(scope) {
         scope.alerts = alerts;

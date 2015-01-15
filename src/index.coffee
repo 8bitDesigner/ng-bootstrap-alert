@@ -46,7 +46,7 @@ class Alerts
     @queue.push(alert)
     return alert
 
-angular.module("ng-bootstrap-alerts", [])
+angular.module("ng-bootstrap-alerts", ['ui.bootstrap.alert', 'template/alert/alert.html'])
   .provider 'alerts', AlertProvider
 
   .directive 'alertList', (alerts, $sce) ->
