@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "scripts": {
     "release:major": "node ./bin/release.js major",
     "release:minor": "node ./bin/release.js minor",
