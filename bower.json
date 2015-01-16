@@ -1,7 +1,7 @@
 {
   "name": "ng-bootstrap-alerts",
   "main": "dist/index.min.js",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "authors": [
     "Paul Sweeney <paul@fullscreen.net>"
   ],
