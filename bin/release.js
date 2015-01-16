@@ -4,6 +4,7 @@ var semver = require('semver')
   , exec = require('child_process').exec
   , version = semver.inc(process.env.npm_package_version, process.argv[2])
   , bowerPath = path.join(process.cwd(), 'bower.json')
+  , npmPath = path.join(process.cwd(), 'package.json')
 
 function updateJson(path, version) {
   var file = require(path)
@@ -13,6 +14,7 @@ function updateJson(path, version) {
 
 // Update and write updated JSON files
 updateJson(bowerPath, version)
+updateJson(npmPath, version)
 
 // This is a terrible shell script
 exec([
@@ -25,6 +27,7 @@ exec([
   'echo "## Tagging"',
   'echo ""',
   'git add '+bowerPath,
+  'git add '+npmPath,
   'git commit -m"v'+version+'"',
   'git tag v'+version
 ].join(' && '), function(err, stdout, stderr) {

@@ -60,7 +60,7 @@ but we also coerce a couple of common of Rails flash types into Bootstrap types:
 
 ## API
 
-### `alertsProvider#queue(message, type)`
+### `alertsProvider#queue(message, type [, optionsObject])`
 
 The `alertsProvider` service has one method `queue`, which allows you to, at
 config-time, preload alerts, with an optional type:
@@ -72,7 +72,11 @@ angular.module('ng-bootstrap-alerts').config(function(alertsProvider) {
 })
 ```
 
-### `alerts#create(message, type)`
+#### Supported options
+- `dismissAfter: intMilliseconds`  
+  Automatically dismisses the alert after a number of milliseconds
+
+### `alerts#create(message, type [,optionsObject])`
 
 The `alerts` service's `create` method, lets you do the same during your app's
 run cycle:
@@ -87,6 +91,10 @@ angular.module('ng-bootstrap-alerts').run(function(alerts) {
 })
 ```
 
+#### Supported options
+- `dismissAfter: intMilliseconds`  
+  Automatically dismisses the alert after a number of milliseconds
+
 ### `alerts#dismiss(alert)`
 The `dismiss` method, lets you remove an existing alert from the page:
 
@@ -94,8 +102,8 @@ The `dismiss` method, lets you remove an existing alert from the page:
 angular.module('ng-bootstrap-alerts').run(function($timeout, alerts) {
   alert = alerts.create('This alert will self-destruct in 5...', 'warning')
 
-  // Automatically dismiss the alert in 5 seconds from now
-  $timeout(function() { alerts.dismiss(alert) }, 5000)
+  // Somewhere else in the world.
+  form.on('submit', function() { alerts.dismiss(alert) })
 })
 ```
 

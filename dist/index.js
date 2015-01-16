@@ -1,23 +1,23 @@
 (function() {
-  var AlertProvider, Alerts,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  var AlertProvider, Alerts, pending,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  pending = null;
 
   AlertProvider = (function() {
     function AlertProvider() {
-      this.$get = __bind(this.$get, this);
-      this.pending = [];
+      pending = [];
     }
 
     AlertProvider.prototype.queue = function(msg, type, opts) {
       if (opts == null) {
         opts = {};
       }
-      return this.pending.push([msg, type, opts]);
+      return pending.push([msg, type, opts]);
     };
 
-    AlertProvider.prototype.$get = function() {
-      return new Alerts(this.pending);
+    AlertProvider.prototype.$get = function($timeout) {
+      return new Alerts($timeout, pending);
     };
 
     return AlertProvider;
@@ -33,7 +33,8 @@
       error: 'danger'
     };
 
-    function Alerts(pendingAlerts) {
+    function Alerts($timeout, pendingAlerts) {
+      this.$timeout = $timeout;
       if (pendingAlerts == null) {
         pendingAlerts = [];
       }
@@ -63,6 +64,13 @@
         alert.type = 'info';
       } else {
         alert.type = type;
+      }
+      if (alert.dismissAfter) {
+        this.$timeout((function(_this) {
+          return function() {
+            return _this.dismiss(alert);
+          };
+        })(this), alert.dismissAfter);
       }
       this.queue.push(alert);
       return alert;

@@ -11,23 +11,18 @@ describe "The alert provider", ->
     inject (alerts) -> service = alerts
 
   it "should let you queue alerts during config", ->
-    expect(provider.pending.length).toBe(1)
-
-    provider.queue('Test message', 'warning')
-
-    expect(provider.pending.length).toBe(2)
-    expect(provider.pending[1]).toEqual(['Test message', 'warning', {}])
-
-  it "should populate alerts to the service", ->
     expect(service.queue.length).toBe(1)
     expect(service.queue[0]).toEqual({msg: 'Test message', type: 'info'})
 
 describe "The alert service", ->
   service = null
+  timeout = null
 
   beforeEach ->
     module('ng-bootstrap-alerts')
-    inject (alerts) -> service = alerts
+    inject (alerts, $timeout) ->
+      timeout = $timeout
+      service = alerts
 
   it "should maintain a queue of alerts", ->
     expect(service.queue.length).toBe(0)
@@ -59,3 +54,17 @@ describe "The alert service", ->
     service.dismiss(alert)
     expect(service.queue.length).toBe(0)
 
+  it "should allow you to automatically close an alert after a delay", ->
+    service.create('Message', 'info', {dismissAfter: 3000})
+    expect(service.queue.length).toBe(1)
+
+    timeout.flush(3001)
+    expect(service.queue.length).toBe(0)
+
+  it "should fail silently if you dismiss an alert before its delay triggers", ->
+    alert = service.create('Message', 'info', {dismissAfter: 3000})
+    expect(service.queue.length).toBe(1)
+    service.dismiss(alert)
+
+    timeout.flush(3001)
+    expect(service.queue.length).toBe(0)

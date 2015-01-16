@@ -1,13 +1,15 @@
+pending = null
+
 # Config-time class, allows feeding in alerts on boot
 class AlertProvider
   constructor: ->
-    @pending = []
+    pending = []
 
   queue: (msg, type, opts = {}) ->
-    @pending.push([msg, type, opts])
+    pending.push([msg, type, opts])
 
-  $get: =>
-    new Alerts(@pending)
+  $get: ($timeout) ->
+    new Alerts($timeout, pending)
 
 # Runtime class, provides a queue of alerts and a means of creating/dismissing alerts
 class Alerts
@@ -23,7 +25,7 @@ class Alerts
     notice: 'info'
     error: 'danger'
 
-  constructor: (pendingAlerts = []) ->
+  constructor: (@$timeout, pendingAlerts = []) ->
     @queue = []
     pendingAlerts.forEach (input) => @create.apply(@, input)
 
@@ -42,6 +44,11 @@ class Alerts
       alert.type = 'info'
     else
       alert.type = type
+
+    if alert.dismissAfter
+      @$timeout =>
+        @dismiss(alert)
+      , alert.dismissAfter
 
     @queue.push(alert)
     return alert
