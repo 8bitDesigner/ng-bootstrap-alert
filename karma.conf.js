@@ -6,7 +6,7 @@ module.exports = function(config) {
       "bower_components/angular-mocks/angular-mocks.js",
       "bower_components/angular-bootstrap/ui-bootstrap.min.js",
       "bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
-      "src/index.coffee",
+      "dist/index.min.js",
       "tests/index.coffee"
     ],
     preprocessors: {

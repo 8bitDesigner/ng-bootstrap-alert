@@ -125,8 +125,9 @@ service:
 To get your dev environment up and running, run `npm install` and `bower install`
 to get the components we need.
 
-Tests are run with `npm run test` and you can build the minified source with
-`npm run build`.
+Tests are run with `npm run test` against the minified source (to catch
+Angular annotation errors). You can build the minified file as you work by
+running `npm run build:watch`
 
 Releases are built using `npm run release:[type]`. So, to generate a new patch
 release, run `npm run release:patch`. This script will:

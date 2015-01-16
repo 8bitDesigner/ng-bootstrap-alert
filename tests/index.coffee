@@ -68,3 +68,23 @@ describe "The alert service", ->
 
     timeout.flush(3001)
     expect(service.queue.length).toBe(0)
+
+describe "The alertList directive", ->
+  beforeEach ->
+    module('ng-bootstrap-alerts')
+
+  factory = (inner, otherClasses = '') ->
+    service = null
+    el = undefined
+    inject ($compile, $rootScope, alerts) ->
+      service = alerts
+      el = $compile("<alert-list></alert-list>")($rootScope)
+      $rootScope.$digest()
+    return [el, service]
+
+  it "should output a list of alerts", ->
+    [el, service] = factory()
+
+    el.scope().$apply -> service.create('oh hai')
+    expect(el.children().length).toBe(1)
+

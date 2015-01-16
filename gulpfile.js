@@ -18,8 +18,8 @@ gulp.task('build', function() {
 gulp.task('minified', function() {
   return gulp.src(files)
          .pipe(coffee())
-         .pipe(ngAnnotate())
          .pipe(uglify())
+         .pipe(ngAnnotate())
          .pipe(concat('dist/index.min.js'))
          .pipe(gulp.dest('.'))
 })

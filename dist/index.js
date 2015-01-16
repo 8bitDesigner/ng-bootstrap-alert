@@ -1,5 +1,5 @@
 (function() {
-  var AlertProvider, Alerts, pending,
+  var AlertProvider, Alerts, alertListDirective, pending,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   pending = null;
@@ -16,9 +16,11 @@
       return pending.push([msg, type, opts]);
     };
 
-    AlertProvider.prototype.$get = function($timeout) {
-      return new Alerts($timeout, pending);
-    };
+    AlertProvider.prototype.$get = [
+      '$timeout', function($timeout) {
+        return new Alerts($timeout, pending);
+      }
+    ];
 
     return AlertProvider;
 
@@ -80,7 +82,7 @@
 
   })();
 
-  angular.module("ng-bootstrap-alerts", ['ui.bootstrap.alert', 'template/alert/alert.html']).provider('alerts', AlertProvider).directive('alertList', function(alerts, $sce) {
+  alertListDirective = function(alerts, $sce) {
     return {
       link: function(scope) {
         scope.alerts = alerts;
@@ -91,6 +93,8 @@
       restrict: 'E',
       template: "<alert\n  ng-repeat=\"alert in alerts.queue\"\n  type=\"{{alert.type}}\"\n  close=\"alerts.dismiss(alert)\"\n>\n  <div class=\"container\" ng-bind-html=\"trust(alert)\"></div>\n</alert>"
     };
-  });
+  };
+
+  angular.module("ng-bootstrap-alerts", ['ui.bootstrap.alert', 'template/alert/alert.html']).provider('alerts', AlertProvider).directive('alertList', ['alerts', '$sce', alertListDirective]);
 
 }).call(this);

@@ -8,8 +8,9 @@ class AlertProvider
   queue: (msg, type, opts = {}) ->
     pending.push([msg, type, opts])
 
-  $get: ($timeout) ->
+  $get: ['$timeout', ($timeout) ->
     new Alerts($timeout, pending)
+  ]
 
 # Runtime class, provides a queue of alerts and a means of creating/dismissing alerts
 class Alerts
@@ -53,21 +54,21 @@ class Alerts
     @queue.push(alert)
     return alert
 
+alertListDirective = (alerts, $sce) ->
+  link: (scope) ->
+    scope.alerts = alerts
+    scope.trust = (alert) -> $sce.trustAsHtml(alert.msg)
+  restrict: 'E'
+  template: """
+    <alert
+      ng-repeat="alert in alerts.queue"
+      type="{{alert.type}}"
+      close="alerts.dismiss(alert)"
+    >
+      <div class="container" ng-bind-html="trust(alert)"></div>
+    </alert>
+  """
+
 angular.module("ng-bootstrap-alerts", ['ui.bootstrap.alert', 'template/alert/alert.html'])
   .provider 'alerts', AlertProvider
-
-  .directive 'alertList', (alerts, $sce) ->
-    link: (scope) ->
-      scope.alerts = alerts
-      scope.trust = (alert) -> $sce.trustAsHtml(alert.msg)
-    restrict: 'E'
-    template: """
-      <alert
-        ng-repeat="alert in alerts.queue"
-        type="{{alert.type}}"
-        close="alerts.dismiss(alert)"
-      >
-        <div class="container" ng-bind-html="trust(alert)"></div>
-      </alert>
-    """
-
+  .directive 'alertList', ['alerts', '$sce', alertListDirective]
