@@ -15,7 +15,7 @@ Then, in your HTML, add the script tag for `ng-bootstrap-alerts`:
 And lastly, in your Angular module, include `ng-bootstrap-alerts` as a dependency:
 
 ``` javascript
-angular.module('my-app', ['ng-bootstrap-alerts')
+angular.module('my-app', ['ng-bootstrap-alerts'])
 ```
 
 ## Usage
